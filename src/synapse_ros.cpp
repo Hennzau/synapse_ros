@@ -1,14 +1,7 @@
 #include "synapse_ros.hpp"
 #include "proto/udp_link.hpp"
 #include <rclcpp/logger.hpp>
-#include <sensor_msgs/msg/detail/battery_state__struct.hpp>
 #include <sensor_msgs/msg/detail/joint_state__struct.hpp>
-#include <sensor_msgs/msg/detail/magnetic_field__struct.hpp>
-#include <sensor_msgs/msg/detail/nav_sat_fix__struct.hpp>
-#include <synapse_protobuf/battery_state.pb.h>
-#include <synapse_protobuf/magnetic_field.pb.h>
-#include <synapse_protobuf/nav_sat_fix.pb.h>
-#include <synapse_protobuf/wheel_odometry.pb.h>
 
 using std::placeholders::_1;
 std::shared_ptr<UDPLink> g_udp_link { NULL };
@@ -25,11 +18,9 @@ SynapseRos::SynapseRos()
 {
     this->declare_parameter("host", "192.0.2.1");
     this->declare_parameter("port", 4242);
-    this->declare_parameter("hil_mode", false);
 
     std::string host = this->get_parameter("host").as_string();
     int port = this->get_parameter("port").as_int();
-    bool hil_mode = this->get_parameter("hil_mode").as_bool();
 
     // subscriptions ros -> cerebri
 
