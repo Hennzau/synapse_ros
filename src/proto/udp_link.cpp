@@ -36,11 +36,7 @@ UDPLink::UDPLink(std::string host, int port)
     tf_->userdata = this;
     tf_->write = write_udp;
     TF_AddGenericListener(tf_.get(), UDPLink::generic_listener);
-    TF_AddTypeListener(tf_.get(), SYNAPSE_CMD_VEL_TOPIC, UDPLink::out_cmd_vel_listener);
     TF_AddTypeListener(tf_.get(), SYNAPSE_ACTUATORS_TOPIC, UDPLink::actuators_listener);
-    TF_AddTypeListener(tf_.get(), SYNAPSE_ODOMETRY_TOPIC, UDPLink::odometry_listener);
-    TF_AddTypeListener(tf_.get(), SYNAPSE_BATTERY_STATE_TOPIC, UDPLink::battery_state_listener);
-    TF_AddTypeListener(tf_.get(), SYNAPSE_NAV_SAT_FIX_TOPIC, UDPLink::nav_sat_fix_listener);
     TF_AddTypeListener(tf_.get(), SYNAPSE_STATUS_TOPIC, UDPLink::status_listener);
     TF_AddTypeListener(tf_.get(), SYNAPSE_UPTIME_TOPIC, UDPLink::uptime_listener);
 
