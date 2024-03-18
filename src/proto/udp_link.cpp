@@ -100,57 +100,6 @@ TF_Result UDPLink::actuators_listener(TinyFrame* tf, TF_Msg* frame)
     return TF_STAY;
 }
 
-TF_Result UDPLink::odometry_listener(TinyFrame* tf, TF_Msg* frame)
-{
-    // parse protobuf message
-    synapse::msgs::Odometry syn_msg;
-    if (!syn_msg.ParseFromArray(frame->data, frame->len)) {
-        std::cerr << "Failed to parse odometry" << std::endl;
-        return TF_STAY;
-    }
-
-    // send to ros
-    UDPLink* udp_link = (UDPLink*)tf->userdata;
-    if (udp_link->ros_ != NULL) {
-        udp_link->ros_->publish_odometry(syn_msg);
-    }
-    return TF_STAY;
-}
-
-TF_Result UDPLink::battery_state_listener(TinyFrame* tf, TF_Msg* frame)
-{
-    // parse protobuf message
-    synapse::msgs::BatteryState syn_msg;
-    if (!syn_msg.ParseFromArray(frame->data, frame->len)) {
-        std::cerr << "Failed to parse battery state" << std::endl;
-        return TF_STAY;
-    }
-
-    // send to ros
-    UDPLink* udp_link = (UDPLink*)tf->userdata;
-    if (udp_link->ros_ != NULL) {
-        udp_link->ros_->publish_battery_state(syn_msg);
-    }
-    return TF_STAY;
-}
-
-TF_Result UDPLink::nav_sat_fix_listener(TinyFrame* tf, TF_Msg* frame)
-{
-    // parse protobuf message
-    synapse::msgs::NavSatFix syn_msg;
-    if (!syn_msg.ParseFromArray(frame->data, frame->len)) {
-        std::cerr << "Failed to parse battery state" << std::endl;
-        return TF_STAY;
-    }
-
-    // send to ros
-    UDPLink* udp_link = (UDPLink*)tf->userdata;
-    if (udp_link->ros_ != NULL) {
-        udp_link->ros_->publish_nav_sat_fix(syn_msg);
-    }
-    return TF_STAY;
-}
-
 TF_Result UDPLink::status_listener(TinyFrame* tf, TF_Msg* frame)
 {
     // parse protobuf message
@@ -164,18 +113,6 @@ TF_Result UDPLink::status_listener(TinyFrame* tf, TF_Msg* frame)
     UDPLink* udp_link = (UDPLink*)tf->userdata;
     if (udp_link->ros_ != NULL) {
         udp_link->ros_->publish_status(syn_msg);
-    }
-    return TF_STAY;
-}
-
-TF_Result UDPLink::out_cmd_vel_listener(TinyFrame* tf, TF_Msg* frame)
-{
-    (void)tf;
-    synapse::msgs::Twist msg;
-    if (!msg.ParseFromArray(frame->data, frame->len)) {
-        std::cerr << "Failed to out_cmd_vel" << std::endl;
-        return TF_STAY;
-    } else {
     }
     return TF_STAY;
 }
