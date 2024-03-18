@@ -50,9 +50,6 @@ public:
     virtual ~SynapseRos();
     void tf_send(int topic, const std::string& data) const;
     void publish_actuators(const synapse::msgs::Actuators& msg);
-    void publish_odometry(const synapse::msgs::Odometry& msg);
-    void publish_battery_state(const synapse::msgs::BatteryState& msg);
-    void publish_nav_sat_fix(const synapse::msgs::NavSatFix& msg);
     void publish_status(const synapse::msgs::Status& msg);
     void publish_uptime(const synapse::msgs::Time& msg);
 
@@ -64,35 +61,16 @@ private:
 
     // subscriptions ros -> cerebri
     rclcpp::Subscription<actuator_msgs::msg::Actuators>::SharedPtr sub_actuators_;
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_cmd_vel_;
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_odom_;
-    rclcpp::Subscription<sensor_msgs::msg::BatteryState>::SharedPtr sub_battery_state_;
     rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr sub_imu_;
-    rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr sub_wheel_odometry_;
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr sub_joy_;
-    rclcpp::Subscription<sensor_msgs::msg::MagneticField>::SharedPtr sub_magnetic_field_;
-    rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr sub_nav_sat_fix_;
-    rclcpp::Subscription<synapse_msgs::msg::BezierTrajectory>::SharedPtr sub_bezier_trajectory_;
-    rclcpp::Subscription<synapse_msgs::msg::PixyVector>::SharedPtr sub_pixy_vector_;
 
     // subscription callbacks
     void actuators_callback(const actuator_msgs::msg::Actuators& msg) const;
-    void battery_state_callback(const sensor_msgs::msg::BatteryState& msg) const;
-    void bezier_trajectory_callback(const synapse_msgs::msg::BezierTrajectory& msg) const;
-    void cmd_vel_callback(const geometry_msgs::msg::Twist& msg) const;
     void imu_callback(const sensor_msgs::msg::Imu& msg) const;
     void joy_callback(const sensor_msgs::msg::Joy& msg) const;
-    void magnetic_field_callback(const sensor_msgs::msg::MagneticField& msg) const;
-    void nav_sat_fix_callback(const sensor_msgs::msg::NavSatFix& msg) const;
-    void odometry_callback(const nav_msgs::msg::Odometry& msg) const;
-    void wheel_odometry_callback(const sensor_msgs::msg::JointState& msg) const;
-    void pixy_vector_callback(const synapse_msgs::msg::PixyVector& msg) const;
 
     // publications cerebri -> ros
     rclcpp::Publisher<actuator_msgs::msg::Actuators>::SharedPtr pub_actuators_;
-    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_odometry_;
-    rclcpp::Publisher<sensor_msgs::msg::BatteryState>::SharedPtr pub_battery_state_;
-    rclcpp::Publisher<sensor_msgs::msg::NavSatFix>::SharedPtr pub_nav_sat_fix_;
     rclcpp::Publisher<synapse_msgs::msg::Status>::SharedPtr pub_status_;
     rclcpp::Publisher<builtin_interfaces::msg::Time>::SharedPtr pub_uptime_;
     rclcpp::Publisher<builtin_interfaces::msg::Time>::SharedPtr pub_clock_offset_;
