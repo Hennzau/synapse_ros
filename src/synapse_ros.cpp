@@ -24,15 +24,10 @@ SynapseRos::SynapseRos()
 
     // subscriptions ros -> cerebri
 
-    sub_actuators_ = this->create_subscription<actuator_msgs::msg::Actuators>(
-        "in/actuators", 10, std::bind(&SynapseRos::actuators_callback, this, _1));
-
     sub_joy_ = this->create_subscription<sensor_msgs::msg::Joy>(
         "in/joy", 10, std::bind(&SynapseRos::joy_callback, this, _1));
 
     // publications cerebri -> ros
-
-    pub_actuators_ = this->create_publisher<actuator_msgs::msg::Actuators>("out/actuators", 10);
 
     pub_status_ = this->create_publisher<synapse_msgs::msg::Status>("out/status", 10);
     pub_uptime_ = this->create_publisher<builtin_interfaces::msg::Time>("out/uptime", 10);
@@ -65,31 +60,6 @@ std_msgs::msg::Header SynapseRos::compute_header(const synapse::msgs::Header& ms
         ros_msg.stamp.nanosec = nanos;
     }
     return ros_msg;
-}
-
-void SynapseRos::publish_actuators(const synapse::msgs::Actuators& msg)
-{
-    actuator_msgs::msg::Actuators ros_msg;
-
-    // header
-    if (msg.has_header()) {
-        ros_msg.header = compute_header(msg.header());
-    }
-
-    // actuators
-    for (auto it = msg.position().begin(); it != msg.position().end(); it++) {
-        ros_msg.position.push_back(*it);
-    }
-
-    for (auto it = msg.velocity().begin(); it != msg.velocity().end(); it++) {
-        ros_msg.velocity.push_back(*it);
-    }
-
-    for (auto it = msg.normalized().begin(); it != msg.normalized().end(); it++) {
-        ros_msg.normalized.push_back(*it);
-    }
-
-    pub_actuators_->publish(ros_msg);
 }
 
 void SynapseRos::publish_status(const synapse::msgs::Status& msg)
@@ -133,34 +103,6 @@ void SynapseRos::publish_uptime(const synapse::msgs::Time& msg)
     pub_clock_offset_->publish(ros_clock_offset_);
 }
 
-void SynapseRos::actuators_callback(const actuator_msgs::msg::Actuators& msg) const
-{
-    synapse::msgs::Actuators syn_msg;
-
-    // header
-    syn_msg.mutable_header()->set_frame_id(msg.header.frame_id);
-    syn_msg.mutable_header()->mutable_stamp()->set_sec(msg.header.stamp.sec);
-    syn_msg.mutable_header()->mutable_stamp()->set_nanosec(msg.header.stamp.nanosec);
-
-    // actuators
-    for (auto i = 0u; i < msg.position.size(); ++i) {
-        syn_msg.add_position(msg.position[i]);
-    }
-
-    for (auto i = 0u; i < msg.velocity.size(); ++i) {
-        syn_msg.add_velocity(msg.velocity[i]);
-    }
-    for (auto i = 0u; i < msg.normalized.size(); ++i) {
-        syn_msg.add_normalized(msg.normalized[i]);
-    }
-
-    std::string data;
-    if (!syn_msg.SerializeToString(&data)) {
-        std::cerr << "Failed to serialize Actuators" << std::endl;
-    }
-    tf_send(SYNAPSE_ACTUATORS_TOPIC, data);
-}
-
 void SynapseRos::joy_callback(const sensor_msgs::msg::Joy& msg) const
 {
     synapse::msgs::Joy syn_msg;
@@ -177,32 +119,6 @@ void SynapseRos::joy_callback(const sensor_msgs::msg::Joy& msg) const
         std::cerr << "Failed to serialize Joy" << std::endl;
     }
     tf_send(SYNAPSE_JOY_TOPIC, data);
-}
-
-void SynapseRos::imu_callback(const sensor_msgs::msg::Imu& msg) const
-{
-    // construct empty syn_msg
-    synapse::msgs::Imu syn_msg {};
-
-    // header
-    syn_msg.mutable_header()->set_frame_id(msg.header.frame_id);
-    syn_msg.mutable_header()->mutable_stamp()->set_sec(msg.header.stamp.sec);
-    syn_msg.mutable_header()->mutable_stamp()->set_nanosec(msg.header.stamp.nanosec);
-
-    // construct message
-    syn_msg.mutable_linear_acceleration()->set_x(msg.linear_acceleration.x);
-    syn_msg.mutable_linear_acceleration()->set_y(msg.linear_acceleration.y);
-    syn_msg.mutable_linear_acceleration()->set_z(msg.linear_acceleration.z);
-    syn_msg.mutable_angular_velocity()->set_x(msg.angular_velocity.x);
-    syn_msg.mutable_angular_velocity()->set_y(msg.angular_velocity.y);
-    syn_msg.mutable_angular_velocity()->set_z(msg.angular_velocity.z);
-
-    // serialize message
-    std::string data;
-    if (!syn_msg.SerializeToString(&data)) {
-        std::cerr << "Failed to serialize IMU" << std::endl;
-    }
-    tf_send(SYNAPSE_IMU_TOPIC, data);
 }
 
 void SynapseRos::tf_send(int topic, const std::string& data) const

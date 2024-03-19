@@ -35,8 +35,8 @@ UDPLink::UDPLink(std::string host, int port)
     tf_->usertag = 0;
     tf_->userdata = this;
     tf_->write = write_udp;
+
     TF_AddGenericListener(tf_.get(), UDPLink::generic_listener);
-    TF_AddTypeListener(tf_.get(), SYNAPSE_ACTUATORS_TOPIC, UDPLink::actuators_listener);
     TF_AddTypeListener(tf_.get(), SYNAPSE_STATUS_TOPIC, UDPLink::status_listener);
     TF_AddTypeListener(tf_.get(), SYNAPSE_UPTIME_TOPIC, UDPLink::uptime_listener);
 
@@ -75,25 +75,6 @@ void UDPLink::rx_handler(const boost::system::error_code& ec, std::size_t bytes_
     sock_.async_receive_from(boost::asio::buffer(rx_buf_, rx_buf_length_),
         my_endpoint_,
         std::bind(&UDPLink::rx_handler, this, _1, _2));
-}
-
-TF_Result UDPLink::actuators_listener(TinyFrame* tf, TF_Msg* frame)
-{
-    synapse::msgs::Actuators msg;
-
-    // get udp link attached to tf pointer in userdata
-    UDPLink* udp_link = (UDPLink*)tf->userdata;
-
-    if (!msg.ParseFromArray(frame->data, frame->len)) {
-        std::cerr << "Failed to parse actuators" << std::endl;
-        return TF_STAY;
-    }
-
-    // send to ros
-    if (udp_link->ros_ != NULL) {
-        udp_link->ros_->publish_actuators(msg);
-    }
-    return TF_STAY;
 }
 
 TF_Result UDPLink::status_listener(TinyFrame* tf, TF_Msg* frame)

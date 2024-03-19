@@ -38,7 +38,7 @@ def generate_launch_description():
         }],
         output='screen',
         remappings=[
-            ('/cerebri/in/cmd_vel', '/cmd_vel')
+
         ],
         arguments=['--ros-args', '--log-level', LaunchConfiguration('log_level')],
         on_exit=Shutdown(),

@@ -4,38 +4,23 @@
 #include <actuator_msgs/msg/actuators.hpp>
 #include <builtin_interfaces/msg/time.hpp>
 #include <geometry_msgs/msg/twist.hpp>
-#include <nav_msgs/msg/odometry.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/subscription_options.hpp>
 
-#include <sensor_msgs/msg/battery_state.hpp>
-#include <sensor_msgs/msg/detail/nav_sat_fix__struct.hpp>
 #include <sensor_msgs/msg/imu.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <sensor_msgs/msg/joy.hpp>
-#include <sensor_msgs/msg/magnetic_field.hpp>
-#include <sensor_msgs/msg/nav_sat_fix.hpp>
 
-#include <synapse_msgs/msg/bezier_trajectory.hpp>
 #include <synapse_msgs/msg/status.hpp>
-#include <synapse_msgs/msg/status.hpp>
-#include <synapse_msgs/msg/pixy_vector.hpp>
 
 #include <synapse_protobuf/actuators.pb.h>
-#include <synapse_protobuf/battery_state.pb.h>
-#include <synapse_protobuf/bezier_trajectory.pb.h>
 #include <synapse_protobuf/header.pb.h>
 #include <synapse_protobuf/imu.pb.h>
 #include <synapse_protobuf/joy.pb.h>
-#include <synapse_protobuf/magnetic_field.pb.h>
-#include <synapse_protobuf/nav_sat_fix.pb.h>
-#include <synapse_protobuf/odometry.pb.h>
 #include <synapse_protobuf/status.pb.h>
 #include <synapse_protobuf/time.pb.h>
 #include <synapse_protobuf/twist.pb.h>
-#include <synapse_protobuf/wheel_odometry.pb.h>
-#include <synapse_protobuf/pixy_vector.pb.h>
 
 #include <synapse_tinyframe/SynapseTopics.h>
 #include <synapse_tinyframe/TinyFrame.h>
@@ -48,8 +33,9 @@ class SynapseRos : public rclcpp::Node {
 public:
     SynapseRos();
     virtual ~SynapseRos();
+
     void tf_send(int topic, const std::string& data) const;
-    void publish_actuators(const synapse::msgs::Actuators& msg);
+
     void publish_status(const synapse::msgs::Status& msg);
     void publish_uptime(const synapse::msgs::Time& msg);
 
@@ -60,17 +46,12 @@ private:
     std_msgs::msg::Header compute_header(const synapse::msgs::Header& msg);
 
     // subscriptions ros -> cerebri
-    rclcpp::Subscription<actuator_msgs::msg::Actuators>::SharedPtr sub_actuators_;
-    rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr sub_imu_;
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr sub_joy_;
 
     // subscription callbacks
-    void actuators_callback(const actuator_msgs::msg::Actuators& msg) const;
-    void imu_callback(const sensor_msgs::msg::Imu& msg) const;
     void joy_callback(const sensor_msgs::msg::Joy& msg) const;
 
     // publications cerebri -> ros
-    rclcpp::Publisher<actuator_msgs::msg::Actuators>::SharedPtr pub_actuators_;
     rclcpp::Publisher<synapse_msgs::msg::Status>::SharedPtr pub_status_;
     rclcpp::Publisher<builtin_interfaces::msg::Time>::SharedPtr pub_uptime_;
     rclcpp::Publisher<builtin_interfaces::msg::Time>::SharedPtr pub_clock_offset_;
