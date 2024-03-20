@@ -8,19 +8,12 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/subscription_options.hpp>
 
-#include <sensor_msgs/msg/imu.hpp>
-#include <sensor_msgs/msg/joint_state.hpp>
 #include <sensor_msgs/msg/joy.hpp>
 
 #include <synapse_msgs/msg/status.hpp>
 
-#include <synapse_protobuf/actuators.pb.h>
-#include <synapse_protobuf/header.pb.h>
-#include <synapse_protobuf/imu.pb.h>
 #include <synapse_protobuf/joy.pb.h>
 #include <synapse_protobuf/status.pb.h>
-#include <synapse_protobuf/time.pb.h>
-#include <synapse_protobuf/twist.pb.h>
 
 #include <synapse_tinyframe/SynapseTopics.h>
 #include <synapse_tinyframe/TinyFrame.h>
