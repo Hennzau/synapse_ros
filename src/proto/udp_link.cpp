@@ -38,7 +38,6 @@ UDPLink::UDPLink(std::string host, int port)
 
     TF_AddGenericListener(tf_.get(), UDPLink::generic_listener);
     TF_AddTypeListener(tf_.get(), SYNAPSE_STATUS_TOPIC, UDPLink::status_listener);
-    TF_AddTypeListener(tf_.get(), SYNAPSE_UPTIME_TOPIC, UDPLink::uptime_listener);
 
     // schedule new rx
     sock_.async_receive_from(boost::asio::buffer(rx_buf_, rx_buf_length_),
@@ -90,23 +89,6 @@ TF_Result UDPLink::status_listener(TinyFrame* tf, TF_Msg* frame)
     UDPLink* udp_link = (UDPLink*)tf->userdata;
     if (udp_link->ros_ != NULL) {
         udp_link->ros_->publish_status(syn_msg);
-    }
-    return TF_STAY;
-}
-
-TF_Result UDPLink::uptime_listener(TinyFrame* tf, TF_Msg* frame)
-{
-    // parse protobuf message
-    synapse::msgs::Time syn_msg;
-    if (!syn_msg.ParseFromArray(frame->data, frame->len)) {
-        std::cerr << "Failed to parse uptime" << std::endl;
-        return TF_STAY;
-    }
-
-    // send to ros
-    UDPLink* udp_link = (UDPLink*)tf->userdata;
-    if (udp_link->ros_ != NULL) {
-        udp_link->ros_->publish_uptime(syn_msg);
     }
     return TF_STAY;
 }

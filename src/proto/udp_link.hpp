@@ -37,7 +37,6 @@ private:
     void send_frame(TF_Msg* msg);
 
     static TF_Result status_listener(TinyFrame* tf, TF_Msg* frame);
-    static TF_Result uptime_listener(TinyFrame* tf, TF_Msg* frame);
     static TF_Result generic_listener(TinyFrame* tf, TF_Msg* msg);
 };
 

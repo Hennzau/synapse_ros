@@ -30,8 +30,6 @@ SynapseRos::SynapseRos()
     // publications cerebri -> ros
 
     pub_status_ = this->create_publisher<synapse_msgs::msg::Status>("out/status", 10);
-    pub_uptime_ = this->create_publisher<builtin_interfaces::msg::Time>("out/uptime", 10);
-    pub_clock_offset_ = this->create_publisher<builtin_interfaces::msg::Time>("out/clock_offset", 10);
 
     // create udp link
     g_udp_link = std::make_shared<UDPLink>(host, port);
@@ -83,24 +81,6 @@ void SynapseRos::publish_status(const synapse::msgs::Status& msg)
     ros_msg.request_seq = msg.request_seq();
 
     pub_status_->publish(ros_msg);
-}
-
-void SynapseRos::publish_uptime(const synapse::msgs::Time& msg)
-{
-    builtin_interfaces::msg::Time ros_uptime;
-    rclcpp::Time now = get_clock()->now();
-
-    int64_t uptime_nanos = msg.sec() * 1e9 + msg.nanosec();
-    int64_t clock_offset_nanos = now.nanoseconds() - uptime_nanos;
-
-    ros_uptime.sec = msg.sec();
-    ros_uptime.nanosec = msg.nanosec();
-
-    ros_clock_offset_.sec = clock_offset_nanos / 1e9;
-    ros_clock_offset_.nanosec = clock_offset_nanos - ros_clock_offset_.sec * 1e9;
-
-    pub_uptime_->publish(ros_uptime);
-    pub_clock_offset_->publish(ros_clock_offset_);
 }
 
 void SynapseRos::joy_callback(const sensor_msgs::msg::Joy& msg) const
