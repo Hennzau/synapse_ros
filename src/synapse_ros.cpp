@@ -1,5 +1,6 @@
 #include "synapse_ros.hpp"
 #include "proto/udp_link.hpp"
+
 #include <rclcpp/logger.hpp>
 #include <sensor_msgs/msg/detail/joint_state__struct.hpp>
 
@@ -26,6 +27,9 @@ SynapseRos::SynapseRos()
 
     sub_joy_ = this->create_subscription<sensor_msgs::msg::Joy>(
         "in/joy", 10, std::bind(&SynapseRos::joy_callback, this, _1));
+
+    sub_road_curve_angle_ = this->create_subscription<sensor_msgs::msg::Joy>(
+        "in/road_curve_angle", 10, std::bind(&SynapseRos::road_curve_angle_callback, this, _1));
 
     // publications cerebri -> ros
 
@@ -98,7 +102,28 @@ void SynapseRos::joy_callback(const sensor_msgs::msg::Joy& msg) const
     if (!syn_msg.SerializeToString(&data)) {
         std::cerr << "Failed to serialize Joy" << std::endl;
     }
+
     tf_send(SYNAPSE_JOY_TOPIC, data);
+}
+
+void SynapseRos::road_curve_angle_callback(const synapse_msgs::msg::RoadCurveAngle& msg) const
+{
+    synapse::msgs::RoadCurveAngle syn_msg;
+
+    // header
+    syn_msg.mutable_header()->set_frame_id(msg.header.frame_id);
+    syn_msg.mutable_header()->mutable_stamp()->set_sec(msg.header.stamp.sec);
+    syn_msg.mutable_header()->mutable_stamp()->set_nanosec(msg.header.stamp.nanosec);
+
+    // vector
+    syn_msg.angle(msg.angle);
+
+    std::string data;
+    if (!syn_msg.SerializeToString(&data)) {
+        std::cerr << "Failed to serialize RoadCurveAngle" << std::endl;
+    }
+
+    tf_send(SYNAPSE_ROAD_CURVE_ANGLE_TOPIC, data);
 }
 
 void SynapseRos::tf_send(int topic, const std::string& data) const
