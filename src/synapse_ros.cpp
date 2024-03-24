@@ -28,7 +28,7 @@ SynapseRos::SynapseRos()
     sub_joy_ = this->create_subscription<sensor_msgs::msg::Joy>(
         "in/joy", 10, std::bind(&SynapseRos::joy_callback, this, _1));
 
-    sub_road_curve_angle_ = this->create_subscription<sensor_msgs::msg::Joy>(
+    sub_road_curve_angle_ = this->create_subscription<synapse_msgs::msg::RoadCurveAngle>(
         "in/road_curve_angle", 10, std::bind(&SynapseRos::road_curve_angle_callback, this, _1));
 
     // publications cerebri -> ros
