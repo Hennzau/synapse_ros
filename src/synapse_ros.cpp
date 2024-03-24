@@ -116,7 +116,7 @@ void SynapseRos::road_curve_angle_callback(const synapse_msgs::msg::RoadCurveAng
     syn_msg.mutable_header()->mutable_stamp()->set_nanosec(msg.header.stamp.nanosec);
 
     // vector
-    syn_msg.angle(msg.angle);
+    syn_msg.set_angle(msg.angle);
 
     std::string data;
     if (!syn_msg.SerializeToString(&data)) {
