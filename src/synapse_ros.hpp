@@ -42,7 +42,7 @@ private:
 
     // subscriptions ros -> cerebri
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr sub_joy_;
-    rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr sub_road_curve_angle_;
+    rclcpp::Subscription<synapse_msgs::msg::RoadCurveAngle>::SharedPtr sub_road_curve_angle_;
 
     // subscription callbacks
     void joy_callback(const sensor_msgs::msg::Joy& msg) const;
